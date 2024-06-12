@@ -6,9 +6,17 @@ const getBooks = (request, response) => {
 
 const getBook = (request, response) => {
     const { book_id } = request.params;
-    return Book.findById(book_id).then((book) => {
-        response.status(200).send(book)
-    }).catch(e => response.status(500).send(e.message))
+    if (Book.findById(book_id)) {
+        return Book.findById(book_id).then((book) => {
+            if (book) {
+                response.status(200).send(book)
+            } else {
+                response.status(404).send("Такой книги нет")
+            }
+
+        }).catch(e => response.status(500).send(e.message))
+    }
+
 
 }
 
@@ -21,14 +29,22 @@ const createBook = (request, response) => {
 const updateBook = (request, response) => {
     const { book_id } = request.params;
     return Book.findByIdAndUpdate(book_id, { ...request.body }).then((book) => {
-        response.status(200).send(book)
+        if (book) {
+            response.status(200).send(book)
+        } else {
+            response.status(404).send("Такой книги нет")
+        }
     }).catch(e => response.status(500).send(e.message))
 }
 
 const deleteBook = (request, response) => {
     const { book_id } = request.params;
-    return Book.findByIdAndDelete(book_id).then(() => {
-        response.status(200).send("Success")
+    return Book.findByIdAndDelete(book_id).then((book) => {
+        if (book) {
+            response.status(200).send("Success")
+        } else {
+            response.status(404).send("Такой книги нет")
+        }
     }).catch(e => response.status(500).send(e.message))
 }
 
